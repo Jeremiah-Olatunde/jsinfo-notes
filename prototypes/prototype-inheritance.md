@@ -11,7 +11,7 @@ object have a special hidden property called `[[Prototype]]`
 the value of this property is either another object or `null`
 when a property is *read* from an object, the prototype chain is searched starting from the object until the property is found. 
 this mechanism is call prototypal inheritance
-properties defined on an object in the prototype chain of another object are called inherited properties 
+properties defined on some object in the prototype chain of an object are called inherited properties 
 
 `__proto__` is an accessor property (getter and setter) for the hidden `[[Prototype]]` property
 
@@ -31,8 +31,8 @@ warning:
 	circular prototype chains are not allowed. an error will be thrown
 	`__proto__` can only be `null` or another object if a primitive value is set it is ignored
 
-warning: 
-	if `__proto__ === null` accessing `__proto__` returns undefined.
+note: 
+	if `__proto__ === null` accessing the prototype via `__proto__` returns undefined.
 	using `Object.getPrototypeOf` returns `null` as expected.
 
 
@@ -72,10 +72,10 @@ console.log(athelete.name); // JJO does not affect prototypal inheretance, still
 console.log(Object.getPrototypeOf(athelete)); // person still
 ```
 
-probably due to poor design choices made prior to `ES2015`
+probably due to pre-`ES2015` weirdness
 avoid using `__proto__` all together
 
-writing does not use the prototype
+writing to an object does not use the prototype chain
 write and delete operations work directly with the object
 
 ```javascript
@@ -93,8 +93,16 @@ console.log(athelete.name); // Jesuseun
 console.log(person.name); // person name property unchanged
 ```
 
-accessor properties are different
-write to an accessor property invokes the setter on the prototype chain as opposed to writing over the property on the original object 
+```javascript
+const person = { name: "person" };
+const athelete = { __proto__: person };
+
+delete athelete.name;
+console.log(person); // { name: "person" } remains unaffected
+```
+
+accessor properties are different.
+writing to an accessor property invokes the corresponding setter on the prototype chain as opposed to writing over the property on the original object.
 assignments to accessor properties are treated as function calls not assignments 
 
 ```javascript
@@ -122,6 +130,59 @@ console.log(athelete);
 // firstName and lastName properties added on athlete
 // not fullName
 
+```
+
+note:
+	if a data property is found on the prototype chain before an accessor property of the same name write and delete operations work on the object itself as per usual
+
+```javascript
+const person = { 
+  name: "person", 
+  get fullname(){ return this.name; },
+  set fullname(value){ this.name = value + "setter"; } 
+  // "setter" identifies when this setter is invoked
+};
+
+const athelete = { 
+  __proto__: person,
+  fullname: "yo mama" // override accessor fullname with a data fullname
+};
+
+athelete.fullname = "yo father";
+
+console.log(athelete.fullname); // "yo father" fullname setter on person not invoked
+delete athelete.fullname; // removing own fullname property
+
+// with no fullname property on athelete the prototype chain is searched
+// the accessor full name property on person is found and the setter invoked
+athelete.fullname = "lorem"; 
+
+console.log(athelete.fullname); // loremsetter 
+```
+
+```javascript
+const person = { 
+  name: "person", 
+  get fullname(){ return this.name; },
+  set fullname(value){ this.name = value + "setter"; }
+};
+
+const athelete = { 
+  __proto__: person,
+  fullname: "yo mama"
+};
+
+const footballer = {
+  __proto__: athelete,
+}
+
+console.log(footballer.fullname); // "yo mama" from athelete
+
+// encounters data fullname on athelete before accessor fullname on person
+// hence performs wirte operation on footballer without invoking accessor
+footballer.fullname = "lionel mession"; 
+console.log(footballer); // has own fullname property now
+delete footballer.name; // deletes own fullname property
 ```
 
 value of this
@@ -156,7 +217,8 @@ looping
 `obj.hasOwnProperty(propName)` returns `true` if `propName` is not inherited and `false` otherwise.
 
 `Object.keys` and `Object.values` both ignore inherited properties 
-
+descriptor methods ignore inherited properties...obviously 
+`Object.getOwnPropertyDescriptors`
 
 note:
 	All methods found on `Object.prototype` are `enumerable: false`
