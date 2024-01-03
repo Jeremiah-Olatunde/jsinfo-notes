@@ -143,3 +143,23 @@ note:
 	the function always expects an object as an argument.
 	to use all default arguments pass in an empty object `myFunc({})`
 	or assign a default object using function default parameter syntax
+
+note:
+accessor properties can be destructured 
+
+```javascript
+const testObj = {
+  firstName: "Jesuseun",
+  lastName: "Olatunde",
+
+  get fullName(){
+    return this.firstName + " " + this.lastName;
+  }
+}
+
+function printFullName({ fullName }){
+  console.log(fullName);
+}
+
+printFullName(testObj); // "Jesuseun Olatunde"
+```
