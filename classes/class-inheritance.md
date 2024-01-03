@@ -8,13 +8,17 @@ creating new functionality on top of an existing class
 ```javascript
 class ParentClass {}
 class ChildClass extends ParentClass {}
-
-
 ```
 
 note:
 	`ParentClass` specifies either the class or an expression that evaluated a class
 	technically specifying just the class is an expression that evaluates to a class
+
+```javascript
+function Parent(){}
+function Child(){}
+Object.setPrototypeOf(Child.prototype, Parent.prototype);
+```
 
 Again this is syntactic sugar for prototypal mechanics
 the `[[Prototype]]` of `ChildClass.prototype` is set to `ParentClass.prototype` 
