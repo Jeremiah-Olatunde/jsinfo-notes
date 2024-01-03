@@ -207,6 +207,11 @@ console.log(Function instanceof Object);
 console.log(Object instanceof Function);
 ```
 
+
+note:
+	it is important to remember that `Object` and `Function` themselves aren't in their own prototype chains directly. Their `prototype` properties are.
+	To say an `objectA` is an instance of `objectB` in JavaScript is to say that `objectB.prototype` is somewhere in the prototype chain of `objectA`
+
 ***BRUHHHH***
 
 
