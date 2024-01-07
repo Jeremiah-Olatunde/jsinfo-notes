@@ -50,6 +50,14 @@ console.log("third");
 also note that `resolve` and `reject` do not force the executor function to return.  
 code below a `resolve` or `reject` call will still run.  
 
+note too that the promise will reject with an error if any runtime error at all occurs within the executor function.
+
+```javascript
+const promise = new Promise(resolve => resolve(hello));
+
+promise.catch(({name, message}) => console.log(name, "=>", message))
+// ReferenceError => hello is not defined
+```
 
 the main utility of promises are in asynchronous code
 
