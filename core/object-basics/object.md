@@ -29,7 +29,7 @@ const person1 = new Object();
 ```
 
 > [!note] Valid Identifier Keys
-> If the `string` used for an object key is also a [[variables|valid variable identifier]] then the quotations may be omitted.
+> If the `string` used for an object key is also a [[programming/javascript/jsinfo/core/fundementals/variables|valid variable identifier]] then the quotations may be omitted.
 > ```javascript
 > const person0 = {
 >	firstName: "Jesuseun",
